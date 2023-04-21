@@ -4,19 +4,19 @@ metadata:
   name: K8s-deployment
   namespace: default
   labels:
-    app: test_api
+    app: test-api
 spec:
   selector:
     matchLabels:
-      app: test_api
+      app: test-api
   replicas: 3
   template:
     metadata:
       labels:
-        app: test_api 
+        app: test-api 
     spec:
       containers:
-      - name: node_api
+      - name: node-api
         image: rosechege/sample_image:latest
         imagePullPolicy: Always
         ports:
