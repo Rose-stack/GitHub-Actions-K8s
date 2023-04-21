@@ -35,11 +35,11 @@ jobs:
       - name: Set up EKS kube config
         run: |
           mkdir ${HOME}/.kube | tee -a
-          echo  ${{ secrets.KUBE_CONFIG }} | base64 --decode > ${HOME}/.kube/config
+          echo "${{ secrets.KUBE_CONFIG }}" | base64 --decode > ${HOME}/.kube/config
           cat ${HOME}/.kube/config
 
       - name: Use kube context
-        run: kubectl config use-context arn:aws:eks:us-west-1:1234567890:cluster/eks_k8s
+        run: kubectl config use-context arn:aws:eks:us-west-1:981576070291:cluster/eks_k8s
 
       - name: AWS Authentication
         uses: aws-actions/configure-aws-credentials@v1
