@@ -1,0 +1,52 @@
+name: Kubernetes CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  k8s_deployment:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/sample_image:latest
+
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v2.0
+        with:
+          version: "v1.25.0"
+        id: install
+
+      - name: Set up EKS kube config
+        run: |
+          sudo mkdir ${HOME}/.kube | tee -a
+          echo  ${{ secrets.KUBE_CONFIG }} | base64 --decode > ${HOME}/.kube/config
+          cat ${HOME}/.kube/config
+
+      - name: Use kube context
+        run: kubectl config use-context arn:aws:eks:us-west-1:1234567890:cluster/eks_k8s
+
+      - name: AWS Authentication
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_ID}}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ID }}
+          aws-region: us-west-1
+
+      - name: Deploy to EKS
+        run: kubectl apply -f deployment.yml
