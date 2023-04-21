@@ -34,7 +34,7 @@ jobs:
 
       - name: Set up EKS kube config
         run: |
-          sudo mkdir ${HOME}/.kube | tee -a
+          mkdir ${HOME}/.kube | tee -a
           echo  ${{ secrets.KUBE_CONFIG }} | base64 --decode > ${HOME}/.kube/config
           cat ${HOME}/.kube/config
 
